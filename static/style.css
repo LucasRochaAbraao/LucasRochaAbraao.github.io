@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+
+
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Montserrat;
+    background-color: #201F25;
+    color: #E4E4E4;
+    height: 95vh;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+#main-view {
+    margin: 0 auto;
+    height: 100%;
+    width: 80%;
+    border-left: 1px solid #E4E4E4;
+    border-right: 1px solid #E4E4E4;
+}
+
+.nav {
+    text-align: center;
+    font-size: 1.1em;
+}
+
+.nav li {
+    display: inline;
+    padding: 0 1%;
+}
+
+.nav a {
+    text-decoration: none;
+    display: inline-block;
+    padding: .5em;
+    color: #E4E4E4;
+}
+
+.nav a:hover {
+    background-color: rgba(255, 255, 255, .1);
+}
+
+.nav lu {
+    margin: 0;
+}
+
+.content {
+    margin: 8em;
+}
+
+.footer-container {
+    background-color: #17171A;
+    color: #E4E4E4;
+    position: fixed;
+    width: 100vw;
+    height: 15vh;
+    bottom: 0;
+    left: 0;
+    text-align: center;
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.footer_copyright {
+    height: 0px;
+    margin-top: 0px;
+}
+
+.social {
+    list-style-type: none;
+    justify-content: center;
+    display: flex;
+    padding: 0px;
+}
+
+.social li {
+    margin: 2rem;
+    margin-bottom: 0px;
+}
+
+.social li img {
+    height: 30px;
+}
