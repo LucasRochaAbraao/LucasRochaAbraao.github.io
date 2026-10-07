@@ -1,32 +1,129 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-    <head>
-        <title>Lucas Rocha Abraão</title>
-        <meta charset="UTF-8" />
-        <meta http-equiv="refresh" content="0; URL=pages/contact.html" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="Site pessoal de Lucas." />
-        <link rel="stylesheet" href="../static/style.css" />
-        <title>Blog</title>
-    </head>
-    <body>
-        <h2
-            style="
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                margin: auto;
-                width: 50vw;
-                height: 50vh;
-            "
-        >
-            This page is not supposed to display. Sorry for the inconvenience,
-            here is a link to the
-            <a href="https://lucasrochaabraao.com.br/pages/contact.html"
-                >main page</a
-            >.
-        </h2>
-    </body>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#020805">
+  <meta name="description" content="A quiet stream of green characters in the dark.">
+  <title>System // Online</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      background: #020805;
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #020805;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="rain" aria-label="A stream of green characters and warning phrases falling across a dark screen"></canvas>
+  <script>
+    const canvas = document.querySelector("#rain");
+    const context = canvas.getContext("2d");
+    const glyphs = "アカサタナハマヤラワ012345789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const phrases = ["você foi haqueado", "acesso negado", "sistema comprometido"];
+    const fontSize = 16;
+    const phraseFontSize = 14;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let columns = [];
+    let phraseDrops = [];
+    let width = 0;
+    let height = 0;
+    let lastFrame = 0;
+    let nextPhraseAt = 0;
+
+    function resize() {
+      // Cap pixel density so the canvas stays sharp without an oversized backing buffer.
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.ceil(width * ratio);
+      canvas.height = Math.ceil(height * ratio);
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      context.font = `${fontSize}px monospace`;
+      columns = Array.from({ length: Math.ceil(width / fontSize) }, () =>
+        Math.random() * (height / fontSize)
+      );
+      context.fillStyle = "#020805";
+      context.fillRect(0, 0, width, height);
+      if (reducedMotion.matches) drawFrame();
+    }
+
+    function drawFrame(time = performance.now()) {
+      context.fillStyle = "rgba(2, 8, 5, 0.09)";
+      context.fillRect(0, 0, width, height);
+
+      // Schedule phrase drops at random intervals, independently of the character rain.
+      if (nextPhraseAt === 0) {
+        nextPhraseAt = time + 7000 + Math.random() * 11000;
+      } else if (time >= nextPhraseAt) {
+        const text = phrases[Math.floor(Math.random() * phrases.length)];
+        context.font = `bold ${phraseFontSize}px monospace`;
+        const textWidth = context.measureText(text).width;
+        phraseDrops.push({
+          text,
+          x: Math.random() * Math.max(0, width - textWidth),
+          y: -phraseFontSize,
+          speed: 0.65 + Math.random() * 0.45
+        });
+        nextPhraseAt = time + 7000 + Math.random() * 11000;
+      }
+
+      for (let index = 0; index < columns.length; index += 1) {
+        const character = glyphs[Math.floor(Math.random() * glyphs.length)];
+        const x = index * fontSize;
+        const y = columns[index] * fontSize;
+        context.fillStyle = Math.random() > 0.985 ? "#d8ffe5" : "#19f56a";
+        context.fillText(character, x, y);
+
+        if (y > height && Math.random() > 0.975) {
+          columns[index] = 0;
+        } else {
+          columns[index] += 0.55 + Math.random() * 0.7;
+        }
+      }
+
+      context.font = `bold ${phraseFontSize}px monospace`;
+      context.fillStyle = "#69ff9b";
+      for (const phraseDrop of phraseDrops) {
+        context.fillText(phraseDrop.text, phraseDrop.x, phraseDrop.y);
+        phraseDrop.y += phraseDrop.speed * fontSize;
+      }
+      phraseDrops = phraseDrops.filter((phraseDrop) => phraseDrop.y < height + phraseFontSize);
+      context.font = `${fontSize}px monospace`;
+    }
+
+    function animate(time) {
+      if (reducedMotion.matches) return;
+      // About 26 FPS is enough for the falling trails and avoids redrawing every display refresh.
+      if (time - lastFrame > 38) {
+        drawFrame();
+        lastFrame = time;
+      }
+      window.requestAnimationFrame(animate);
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+    window.requestAnimationFrame(animate);
+  </script>
+</body>
 </html>
